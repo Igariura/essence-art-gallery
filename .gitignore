@@ -1,0 +1,17 @@
+# Database connection (has passwords!)
+includes/db-connect.php
+
+# Uploaded images (too big for GitHub)
+uploads/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Temporary files
+*.log
+*.tmp
