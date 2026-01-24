@@ -16,6 +16,21 @@ $search_query = isset($_GET['search']) ? trim($_GET['search']) : '';
 $sort_by = isset($_GET['sort']) ? $_GET['sort'] : 'newest';
 
 // ===========================================
+// SECTION 1.5: GET FEATURED ARTWORKS FOR 3D CAROUSEL
+// ===========================================
+
+// Get 8 featured/newest artworks for the carousel
+$featured_sql = "SELECT 
+                    a.ArtworkID,
+                    a.Title,
+                    a.MainImageURL
+                FROM Artworks a
+                WHERE a.IsAvailable = 1
+                ORDER BY a.DateAdded DESC
+                LIMIT 8";
+$featured_artworks = $pdo->query($featured_sql)->fetchAll();
+
+// ===========================================
 // SECTION 2: BUILD SQL QUERY WITH FILTERS
 // ===========================================
 
@@ -26,6 +41,7 @@ $sql = "SELECT
             a.Price,
             a.MainImageURL,
             a.DateAdded,
+            a.ShowPrice,
             c.CategoryName
         FROM Artworks a
         JOIN Categories c ON a.CategoryID = c.CategoryID
@@ -155,6 +171,115 @@ $categories = $pdo->query($categories_query)->fetchAll();
         .page-header p {
             font-size: 1.2rem;
             opacity: 0.9;
+        }
+
+        /* ===========================================
+           3D CAROUSEL STYLES
+           =========================================== */
+        
+        .carousel-section {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 80px 0;
+            margin-bottom: 50px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .carousel-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(102, 126, 234, 0.1), transparent);
+            pointer-events: none;
+        }
+
+        .carousel-title {
+            text-align: center;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .carousel-subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            font-size: 1.1rem;
+            margin-bottom: 60px;
+        }
+
+        .carousel-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 500px;
+            perspective: 1500px;
+        }
+        
+        .box {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            transform-style: preserve-3d;
+            animation: rotate3d 25s linear infinite;
+            cursor: pointer;
+        }
+
+        .box:hover {
+            animation-play-state: paused;
+        }
+
+        @keyframes rotate3d {
+            0% {
+                transform: perspective(1500px) rotateY(0deg);
+            }
+            100% {
+                transform: perspective(1500px) rotateY(360deg);
+            }
+        }
+
+        .box span {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform-origin: center;
+            transform-style: preserve-3d;
+            transform: rotateY(calc(var(--i) * 45deg)) translateZ(450px);
+            -webkit-box-reflect: below 0px linear-gradient(transparent, transparent, #0004);
+        }
+        
+        .box span img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            object-fit: cover;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: border-color 0.3s;
+        }
+
+        .box span:hover img {
+            border-color: #667eea;
+        }
+
+        .carousel-controls {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .carousel-hint {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+            font-style: italic;
         }
         
         /* Filter Section */
@@ -337,6 +462,23 @@ $categories = $pdo->query($categories_query)->fetchAll();
             .page-header h1 {
                 font-size: 2rem;
             }
+
+            .carousel-title {
+                font-size: 1.8rem;
+            }
+
+            .box {
+                width: 200px;
+                height: 200px;
+            }
+
+            .box span {
+                transform: rotateY(calc(var(--i) * 45deg)) translateZ(300px);
+            }
+
+            .carousel-section {
+                padding: 50px 0;
+            }
             
             .results-info {
                 flex-direction: column;
@@ -364,25 +506,7 @@ $categories = $pdo->query($categories_query)->fetchAll();
                 <span class="navbar-toggler-icon"></span>
             </button>
             
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.php">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="gallery.php">Gallery</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Contact</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="cart.php">🛒 Cart (<?= getCartCount() ?>)</a>
-                    </li>
-                </ul>
-            </div>
+            <?php include 'includes/navbar.php'; ?>
         </div>
     </nav>
 
@@ -396,6 +520,42 @@ $categories = $pdo->query($categories_query)->fetchAll();
             <p>Explore our complete collection of original artworks</p>
         </div>
     </section>
+
+    <!-- ===========================================
+         SECTION 5.5: 3D CAROUSEL - FEATURED ARTWORKS
+         =========================================== -->
+    
+    <?php if (count($featured_artworks) > 0): ?>
+    <section class="carousel-section">
+        <div class="container">
+            <h2 class="carousel-title">✨ Featured Collection</h2>
+            <p class="carousel-subtitle">Discover our newest masterpieces in stunning 3D</p>
+            
+            <div class="carousel-container">
+                <div class="box">
+                    <?php 
+                    $carousel_index = 1;
+                    foreach ($featured_artworks as $featured): 
+                    ?>
+                        <span style="--i: <?= $carousel_index ?>">
+                            <a href="artwork-detail.php?id=<?= $featured['ArtworkID'] ?>">
+                                <img src="<?= htmlspecialchars($featured['MainImageURL']) ?>" 
+                                     alt="<?= htmlspecialchars($featured['Title']) ?>" />
+                            </a>
+                        </span>
+                    <?php 
+                    $carousel_index++;
+                    endforeach; 
+                    ?>
+                </div>
+            </div>
+            
+            <div class="carousel-controls">
+                <p class="carousel-hint">💡 Hover to pause • Click any artwork to view details</p>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
 
     <!-- ===========================================
          SECTION 6: FILTER & SEARCH
@@ -524,9 +684,17 @@ $categories = $pdo->query($categories_query)->fetchAll();
                                 <p class="artwork-category">
                                     <?= htmlspecialchars($artwork['CategoryName']) ?>
                                 </p>
-                                <div class="artwork-price">
-                                    KES <?= number_format($artwork['Price'], 2) ?>
-                                </div>
+                                
+                                <?php if ($artwork['ShowPrice']): ?>
+                                    <div class="artwork-price">
+                                        KES <?= number_format($artwork['Price'], 2) ?>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="artwork-price" style="color: #999;">
+                                        Price on Request
+                                    </div>
+                                <?php endif; ?>
+                                
                                 <a href="artwork-detail.php?id=<?= $artwork['ArtworkID'] ?>" 
                                    class="btn-view">
                                     View Details

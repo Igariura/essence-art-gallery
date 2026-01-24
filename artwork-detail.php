@@ -349,25 +349,7 @@ $related_artworks = $related_stmt->fetchAll();
                 <span class="navbar-toggler-icon"></span>
             </button>
             
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.php">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="gallery.php">Gallery</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Contact</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="cart.php">🛒 Cart (<?= getCartCount() ?>)</a>
-                    </li>
-                </ul>
-            </div>
+           <?php include "includes/navbar.php"; ?>
         </div>
     </nav>
 
@@ -395,13 +377,7 @@ $related_artworks = $related_stmt->fetchAll();
                 <?php unset($_SESSION['error']); ?>
             <?php endif; ?>
             
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="index.php">Home</a></li>
-                    <li class="breadcrumb-item"><a href="gallery.php">Gallery</a></li>
-                    <li class="breadcrumb-item active"><?= htmlspecialchars($artwork['Title']) ?></li>
-                </ol>
-            </nav>
+           
         </div>
     </section>
 

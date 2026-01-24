@@ -1,5 +1,11 @@
 # Database connection (has passwords!)
 includes/db-connect.php
+includes/mpesa-config.php
+
+
+
+
+.env
 
 # Uploaded images (too big for GitHub)
 uploads/

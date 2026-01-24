@@ -1,0 +1,2 @@
+includes/mpesa-cofig.php includes/db-connect.php logs/ *.log .env 
+.vscode/ .idea .DS_Store Thumbs.db uploads/

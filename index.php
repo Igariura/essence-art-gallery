@@ -11,11 +11,13 @@ require_once 'includes/db-connect.php';
 require_once 'includes/cart-functions.php';
 
 // Fetch featured artworks (limit to 6 for homepage)
+// UPDATED: Added ShowPrice column to the SELECT statement
 $featured_query = "SELECT 
                     a.ArtworkID,
                     a.Title,
                     a.Price,
                     a.MainImageURL,
+                    a.ShowPrice,
                     c.CategoryName
                 FROM Artworks a
                 JOIN Categories c ON a.CategoryID = c.CategoryID
@@ -189,6 +191,14 @@ $categories = $pdo->query($categories_query)->fetchAll();
             margin-bottom: 15px;
         }
         
+        /* NEW: Price inquiry text for hidden prices */
+        .price-inquiry {
+            font-size: 1rem;
+            color: #777;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+        
         .btn-view {
             background-color: var(--primary-color);
             color: white;
@@ -275,25 +285,7 @@ $categories = $pdo->query($categories_query)->fetchAll();
             </button>
             
             <!-- Navigation links -->
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.php">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="gallery.php">Gallery</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Contact</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">🛒 Cart (0)</a>
-                    </li>
-                </ul>
-            </div>
+           <?php include 'includes/navbar.php'; ?>
         </div>
     </nav>
 
@@ -303,14 +295,14 @@ $categories = $pdo->query($categories_query)->fetchAll();
     
     <section class="hero-section">
         <div class="container">
-            <h1>Discover Unique Art</h1>
-            <p>Explore our curated collection of original artworks from talented artists</p>
+            <h1>Essence Of Art</h1>
+            <p>Where Creativity Finds its Voice.</p>
             <a href="gallery.php" class="btn btn-hero">Browse Gallery</a>
         </div>
     </section>
 
     <!-- ===========================================
-         SECTION 5: FEATURED ARTWORKS
+         SECTION 5: FEATURED ARTWORKS (UPDATED WITH PRICE LOGIC)
          =========================================== -->
     
     <section class="section" style="background-color: #f8f9fa;">
@@ -327,20 +319,36 @@ $categories = $pdo->query($categories_query)->fetchAll();
                     <?php foreach ($featured_artworks as $artwork): ?>
                         <div class="col-md-4">
                             <div class="artwork-card">
+                                <!-- Artwork Image -->
                                 <img src="<?= htmlspecialchars($artwork['MainImageURL']) ?>" 
                                      alt="<?= htmlspecialchars($artwork['Title']) ?>" 
                                      class="artwork-image">
                                 
                                 <div class="artwork-body">
+                                    <!-- Artwork Title -->
                                     <h3 class="artwork-title">
                                         <?= htmlspecialchars($artwork['Title']) ?>
                                     </h3>
+                                    
+                                    <!-- Category -->
                                     <p class="artwork-category">
                                         <?= htmlspecialchars($artwork['CategoryName']) ?>
                                     </p>
-                                    <div class="artwork-price">
-                                        KES <?= number_format($artwork['Price'], 2) ?>
-                                    </div>
+                                    
+                                    <!-- UPDATED: Price Display Logic -->
+                                    <?php if ($artwork['ShowPrice']): ?>
+                                        <!-- If ShowPrice = 1, display the price -->
+                                        <div class="artwork-price">
+                                            KES <?= number_format($artwork['Price'], 2) ?>
+                                        </div>
+                                    <?php else: ?>
+                                        <!-- If ShowPrice = 0, show inquiry message instead -->
+                                        <p class="price-inquiry">
+                                            Contact us for pricing
+                                        </p>
+                                    <?php endif; ?>
+                                    
+                                    <!-- View Details Button -->
                                     <a href="artwork-detail.php?id=<?= $artwork['ArtworkID'] ?>" 
                                        class="btn-view">
                                         View Details

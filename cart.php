@@ -263,10 +263,14 @@ $cart_count = getCartCount();
             border-radius: 8px;
             margin-top: 20px;
             transition: background-color 0.3s;
+            text-decoration: none;
+            display: block;
+            text-align: center;
         }
         
         .btn-checkout:hover {
             background-color: #c0392b;
+            color: white;
         }
         
         .btn-continue {
@@ -400,25 +404,8 @@ $cart_count = getCartCount();
                 <span class="navbar-toggler-icon"></span>
             </button>
             
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.php">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="gallery.php">Gallery</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Contact</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="cart.php">🛒 Cart (<?= $cart_count ?>)</a>
-                    </li>
-                </ul>
-            </div>
+           <?php include 'includes/navbar.php'; ?>
+           <?php include 'includes/syncCartOnLogin.php';?>
         </div>
     </nav>
 
@@ -548,9 +535,9 @@ $cart_count = getCartCount();
                                 <span>KES <?= number_format($cart_total, 2) ?></span>
                             </div>
                             
-                            <button class="btn-checkout" onclick="alert('Checkout functionality coming soon!')">
+                            <a href="checkout.php" class="btn-checkout">
                                 Proceed to Checkout
-                            </button>
+                            </a>
                             
                             <a href="gallery.php" class="btn-continue">
                                 Continue Shopping
