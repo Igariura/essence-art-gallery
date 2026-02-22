@@ -1,0 +1,24 @@
+name: Essence Art Gallery CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Get the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Build the Docker image
+      - name: Build Docker image
+        run: docker build -t essence-art-gallery .
+
+      # Step 3: Check the image was built successfully
+      - name: Verify image exists
+        run: docker images essence-art-gallery
