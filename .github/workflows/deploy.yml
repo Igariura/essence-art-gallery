@@ -21,7 +21,7 @@ jobs:
           php-version: '8.1'
 
       - name: Check PHP syntax
-        run: findn. -name "*.php" -exec php -l {} \;
+        run: find . -name "*.php" -exec php -l {} \;
 
       
       - name: Build Docker image
