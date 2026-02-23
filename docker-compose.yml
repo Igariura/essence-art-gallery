@@ -13,9 +13,6 @@ services:
       - app-network
 
   db:
-    image: mysql:8.0
-    environment:
-    db:
   image: mysql:8.0
   environment:
     MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
